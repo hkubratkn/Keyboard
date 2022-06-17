@@ -1,0 +1,104 @@
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import com.example.exampleeee.ui.theme.ExampleeeeTheme
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import java.text.NumberFormat
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            ExampleeeeTheme {
+                TipTimeScreen()
+            }
+        }
+    }
+}
+
+@Composable
+fun TipTimeScreen(){
+    var amountInput by remember{mutableStateOf("")}
+    var tipInput by remember{ mutableStateOf("")}
+    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    val tip = calculateTip(amount, tipPercent)
+    val focusManager = LocalFocusManager.current
+
+    Column(
+        modifier = Modifier.padding(32.dp)
+    ){
+        Text(
+            text =  "stringppame"
+        )
+        EditNumberField(
+            label = "contget",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(
+                        FocusDirection.Down
+                    )
+                }
+            ),
+            value = amountInput,
+            onValueChange = {amountInput = it}
+        )
+        EditNumberField(
+            label = "conte",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
+            value = tipInput,
+            onValueChange = {tipInput = it}
+        )
+        Text(
+            text = "tip $tip"
+        )
+    }
+
+}
+
+private fun calculateTip(
+    amount: Double,
+    tipPercent: Double = 15.0
+): String {
+    val tip = tipPercent/100 * amount
+    return NumberFormat.getCurrencyInstance().format(tip)
+}
+
+@Composable
+fun EditNumberField(
+    label: String,
+    keyboardOptions: KeyboardOptions,
+    keyboardActions: KeyboardActions,
+    value: String,
+    onValueChange: (String) -> Unit
+){
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(text = label)},
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions
+    )
+}
